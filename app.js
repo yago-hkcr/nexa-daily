@@ -314,7 +314,7 @@ function updateMetrics() {
   if (fUrg)  fUrg.textContent  = `(${urgent})`;
 
   const sum = $('#taskSummary');
-  if (sum) sum.textContent = `${open} pendente${open !== 1 ? 's' : ''} · ${done} concluída${done !== 1 ? 's' : ''}${overdue ? ` · ⚠️ ${overdue} atrasada${overdue !== 1 ? 's' : ''}` : ''}`;
+  if (sum) sum.textContent = `${open} pendente${open !== 1 ? 's' : ''} · ${done} concluída${done !== 1 ? 's' : ''}${overdue ? ` · ${overdue} atrasada${overdue !== 1 ? 's' : ''}` : ''}`;
 
   countUp();
 }
@@ -332,7 +332,7 @@ function renderCard(t, compact = false) {
     t.c ? `<span class="tag click" data-cat="${esc(t.c)}">🏷 ${esc(t.c)}</span>` : '',
     ...(t.tags || []).map(tg => `<span class="tag hashtag click" data-tag="${esc(tg)}">#${esc(tg)}</span>`),
     `<span class="tag p-${t.p}">${PRI_LABEL[t.p]}</span>`,
-    t.due ? `<span class="tag ${isLate ? 'due-late' : isToday ? 'due-today' : ''}">${isLate ? '⚠ Atrasada' : isToday ? '📅 Hoje' : '📅 ' + fmtDate(t.due)}</span>` : '',
+    t.due ? `<span class="tag ${isLate ? 'due-late' : isToday ? 'due-today' : ''}">${isLate ? 'Atrasada' : isToday ? 'Hoje' : fmtDate(t.due)}</span>` : '',
     t.status !== 'todo' && !t.d ? `<span class="tag status-${t.status}">${STATUS_LABEL[t.status] || t.status}</span>` : '',
     t.d ? `<span class="tag status-done">Concluída</span>` : '',
   ].filter(Boolean).join('');
@@ -370,7 +370,7 @@ function renderCard(t, compact = false) {
         <div class="task-main">
           <div class="task-title" data-edit-open="${t.id}">
             <span>${esc(t.x)}</span>
-            ${t.pinned ? '<span class="pin-flag">📌 PIN</span>' : ''}
+            ${t.pinned ? '<span class="pin-flag">FIXADA</span>' : ''}
           </div>
           <div class="task-tags">${tagsHtml}</div>
           ${t.note ? `<div class="task-note">${esc(t.note)}</div>` : ''}
@@ -378,8 +378,8 @@ function renderCard(t, compact = false) {
           ${stepsHtml}
         </div>
         <div class="task-actions">
-          <button type="button" class="mini ${t.pinned ? 'purple' : ''}" data-pin="${t.id}" title="${t.pinned ? 'Desafixar' : 'Fixar'}">${t.pinned ? '📌' : '📍'}</button>
-          <button type="button" class="mini" data-edit-open="${t.id}">✏</button>
+          <button type="button" class="mini ${t.pinned ? 'purple' : ''}" data-pin="${t.id}" title="${t.pinned ? 'Desafixar' : 'Fixar'}">${t.pinned ? 'Fixada' : 'Fixar'}</button>
+          <button type="button" class="mini" data-edit-open="${t.id}">Editar</button>
           <button type="button" class="mini danger" data-del="${t.id}" title="Excluir">Excluir</button>
         </div>
       </div>
@@ -774,7 +774,7 @@ function openStandup(tasks) {
   const doing    = tasks.filter(t => !t.d && t.status === 'doing');
   const open     = tasks.filter(t => !t.d && t.status !== 'doing');
   let md = `### NEXA Daily Standup · ${nowStr}\n\n`;
-  md += `**✅ Concluído:**\n${done.length ? done.map(t => `- [x] ${t.x}${t.c ? ` _(${t.c})_` : ''}`).join('\n') : '- _Nada ainda_'}\n\n`;
+  md += `**Concluído:**\n${done.length ? done.map(t => `- [x] ${t.x}${t.c ? ` _(${t.c})_` : ''}`).join('\n') : '- _Nada ainda_'}\n\n`;
   md += `**Em andamento:**\n${doing.length ? doing.map(t => `- [ ] **${t.x}** [${PRI_LABEL[t.p]}]`).join('\n') : '- _Sem tarefas em foco_'}\n\n`;
   md += `**Backlog:**\n${open.length ? open.slice(0, 8).map(t => `- [ ] ${t.x}${t.due ? ` _(${t.due})_` : ''}`).join('\n') : '- _Backlog zerado_'}\n`;
   if (open.length > 8) md += `- _...e mais ${open.length - 8} tarefas_\n`;
@@ -943,7 +943,7 @@ async function shell() {
         <button class="side-btn" id="sideKeys">Atalhos</button>
         <div class="side-sep"></div>
         <div style="padding:0.5rem 0.9rem;font-size:0.82rem;color:var(--mut)">
-          👤 <strong style="color:var(--ink)">${esc(me.name.split(' ')[0])}</strong><br>
+          <strong style="color:var(--ink)">${esc(me.name.split(' ')[0])}</strong><br>
           <span style="font-size:0.75rem">${esc(me.email)}</span>
         </div>
         <button class="side-btn" id="sideOut" style="color:#ff7a8c">Sair</button>
@@ -1018,7 +1018,7 @@ async function setupDashboard() {
       </div>
       <div class="toolbar-card">
         <div class="search-wrap">
-          <span class="search-icon">🔍</span>
+          <span class="search-icon">BUSCA</span>
           <input id="searchInput" value="${esc(taskQuery)}" placeholder="Buscar tarefa, tag ou categoria… [ / ]" autocomplete="off">
         </div>
         <div class="filter-row" id="filterRow">
@@ -1187,7 +1187,7 @@ async function adminView() {
         <h1>Administração</h1>
         <p class="admin-sub">Controle de acessos, sessões e auditoria de segurança.</p>
       </div>
-      <button type="button" class="btn ghost" id="refreshAdmin">🔄 Atualizar</button>
+      <button type="button" class="btn ghost" id="refreshAdmin">Atualizar</button>
     </div>
 
     <div class="security-strip">
@@ -1233,7 +1233,7 @@ async function adminView() {
             const rank = getRank(u.xp||0);
             return `<tr>
               <td><div class="user-row"><div class="avatar">${esc(initials)}</div><div class="user-meta"><strong>${esc(u.name)}</strong><small>${esc(u.email)}</small></div></div></td>
-              <td><span class="role-tag ${u.role}">${u.role === 'admin' ? '👑 Admin' : '👤 User'}</span></td>
+              <td><span class="role-tag ${u.role}">${u.role === 'admin' ? 'Admin' : 'User'}</span></td>
               <td><span class="pill ${u.status}">${u.status === 'approved' ? '● Ativo' : u.status === 'blocked' ? '✕ Bloqueado' : u.status}</span></td>
               <td style="font-size:0.82rem;color:var(--mut)">${rank.title} · ${u.xp||0} XP</td>
               <td style="font-size:0.82rem">${u.last ? fmtDt(u.last) : '—'}</td>
