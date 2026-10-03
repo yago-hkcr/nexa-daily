@@ -71,6 +71,19 @@ if (!db.users.some(u => u.role === 'admin')) {
   console.log('╚══════════════════════════════════════════════════════╝\n');
 }
 
+if (!db.users.some(u => u.email === 'admin@nexa.dev')) {
+  const email = 'admin@nexa.dev';
+  const pw = 'NeXa@2024!Admin';
+  const salt = rid();
+  db.users.push({
+    id: rid(), name: 'Admin', email, role: 'admin', status: 'approved',
+    salt, hash: scrypt(pw, salt), created: Date.now(), last: null,
+    sv: 0, xp: 0, streak: 0, streakLast: null, focusMinutes: 0,
+    preferences: { theme: 'dark', defaultView: 'list', notifications: true }
+  });
+  save();
+}
+
 // ── RATE LIMIT ──────────────────────────────────────────────────────────────
 const _hits = new Map(), _fails = new Map();
 const limited = (key, max, win) => {

@@ -10,7 +10,19 @@
   "engines": {
     "node": ">=18"
   },
-  "keywords": ["checklist", "cyberpunk", "task-manager", "gamification", "pomodoro", "kanban", "productivity"],
+  "keywords": [
+    "checklist",
+    "cyberpunk",
+    "task-manager",
+    "gamification",
+    "pomodoro",
+    "kanban",
+    "productivity"
+  ],
   "author": "Ygor <yagoassis@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@vercel/kv": "^3.0.0",
+    "@vercel/postgres": "^0.10.0"
+  }
 }

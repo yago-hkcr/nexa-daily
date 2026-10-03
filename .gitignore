@@ -6,3 +6,5 @@ data.json.tmp
 .env.*
 .DS_Store
 Thumbs.db
+
+.vercel

@@ -18,6 +18,13 @@ const api = async (url, method = 'GET', data) => {
     headers: { 'Content-Type': 'application/json' },
     body: data !== undefined ? JSON.stringify(data) : undefined
   };
+  
+  // Add token for authenticated requests
+  const token = localStorage.getItem('nexa_token');
+  if (token) {
+    opts.headers['Authorization'] = `Bearer ${token}`;
+  }
+  
   try {
     const r = await fetch('/api/' + url, opts);
     let d = {};
@@ -902,7 +909,7 @@ function gate() {
     const msg = $('#lmsg'); msg.className = 'msg'; msg.textContent = '';
     const payload = { email: $('#le').value, password: $('#lp').value };
     if (loginMode === 'req') payload.name = $('#ln').value;
-    const r = await POST(loginMode === 'req' ? 'request' : 'login', payload);
+    const r = await POST(loginMode === 'req' ? 'register' : 'login', payload);
     if (!r.ok) {
       msg.className = 'msg e'; msg.textContent = r.d.error || 'Credenciais inválidas.';
       play('trash'); $('.box').classList.remove('shake'); void $('.box').offsetWidth; $('.box').classList.add('shake');
@@ -912,6 +919,8 @@ function gate() {
       msg.className = 'msg o'; msg.textContent = 'Solicitação enviada! Aguarde autorização.';
       $('#loginForm').reset(); return;
     }
+    // Save token and user data
+    localStorage.setItem('nexa_token', r.d.token);
     play('streak'); me = r.d; currentTab = 'main'; shell();
   };
 }
@@ -943,7 +952,7 @@ async function shell() {
         <button class="side-btn" id="sideKeys">⌨ Atalhos</button>
         <div class="side-sep"></div>
         <div style="padding:0.5rem 0.9rem;font-size:0.82rem;color:var(--mut)">
-          👤 <strong style="color:var(--ink)">${esc(me.name.split(' ')[0])}</strong><br>
+          👤 <strong style="color:var(--ink)">${esc(me.email.split('@')[0])}</strong><br>
           <span style="font-size:0.75rem">${esc(me.email)}</span>
         </div>
         <button class="side-btn" id="sideOut" style="color:#ff7a8c">⏻ Sair</button>
@@ -957,7 +966,12 @@ async function shell() {
   $$('[data-tab]').forEach(b => b.onclick = () => { currentTab = b.dataset.tab; play('blip'); shell(); });
 
   // logout
-  const handleLogout = async () => { await POST('logout', {}); play('trash'); gate(); };
+  const handleLogout = async () => { 
+    localStorage.removeItem('nexa_token'); 
+    await POST('logout', {}); 
+    play('trash'); 
+    gate(); 
+  };
   $('#sideOut').onclick = handleLogout;
   $('#navOut').onclick  = handleLogout;
 
