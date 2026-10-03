@@ -53,31 +53,24 @@ const log = (ev, who, ip) => {
 };
 
 // ── SETUP ADMIN ─────────────────────────────────────────────────────────────
+const BOOTSTRAP_ADMIN_EMAIL = (process.env.ADMIN_EMAIL || 'yagopinto').toLowerCase();
+const BOOTSTRAP_ADMIN_SALT = 'nexa-admin-v4';
+const BOOTSTRAP_ADMIN_HASH = '2ee00491708ea4bc63329a45f4bed9947d56c6eb91e2b8821d00585aa08817aebb9ec3dd75cb3cb7\n6ff03b9f48a314ce603e8b724cc411caf85b9038a39dcaf7';
+const adminSalt = process.env.ADMIN_PASSWORD ? rid() : BOOTSTRAP_ADMIN_SALT;
+const adminHash = process.env.ADMIN_PASSWORD ? scrypt(process.env.ADMIN_PASSWORD, adminSalt) : BOOTSTRAP_ADMIN_HASH.replace(/\n/g, '');
 if (!db.users.some(u => u.role === 'admin')) {
-  const email = (process.env.ADMIN_EMAIL || 'dono@nexa.local').toLowerCase();
-  const pw    = process.env.ADMIN_PASSWORD || crypto.randomBytes(14).toString('base64url');
-  const salt  = rid();
   db.users.push({
-    id: rid(), name: 'Dono', email, role: 'admin', status: 'approved',
-    salt, hash: scrypt(pw, salt), created: Date.now(), last: null,
+    id: rid(), name: 'Admin', email: BOOTSTRAP_ADMIN_EMAIL, role: 'admin', status: 'approved',
+    salt: adminSalt, hash: adminHash, created: Date.now(), last: null,
     sv: 0, xp: 0, streak: 0, streakLast: null, focusMinutes: 0,
     preferences: { theme: 'dark', defaultView: 'list', notifications: true }
   });
   save();
-  console.log('\n╔══════════════════════════════════════════════════════╗');
-  console.log('║  NEXA Daily v3 — Dono criado (anote, não aparece de novo)');
-  console.log(`║  Email : ${email}`);
-  console.log(`║  Senha : ${pw}`);
-  console.log('╚══════════════════════════════════════════════════════╝\n');
 }
-
-if (!db.users.some(u => u.email === 'admin@nexa.dev')) {
-  const email = 'admin@nexa.dev';
-  const pw = 'NeXa@2024!Admin';
-  const salt = rid();
+if (!db.users.some(u => u.email === BOOTSTRAP_ADMIN_EMAIL)) {
   db.users.push({
-    id: rid(), name: 'Admin', email, role: 'admin', status: 'approved',
-    salt, hash: scrypt(pw, salt), created: Date.now(), last: null,
+    id: rid(), name: 'Admin', email: BOOTSTRAP_ADMIN_EMAIL, role: 'admin', status: 'approved',
+    salt: adminSalt, hash: adminHash, created: Date.now(), last: null,
     sv: 0, xp: 0, streak: 0, streakLast: null, focusMinutes: 0,
     preferences: { theme: 'dark', defaultView: 'list', notifications: true }
   });

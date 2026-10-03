@@ -157,7 +157,7 @@ function toast(msg, type = '') {
   const d = document.createElement('div');
   d.className = `toast ${type}`;
   d.setAttribute('role', 'status');
-  d.innerHTML = `<span>${type === 'success' ? '⚡' : type === 'error' ? '✕' : '◈'}</span> <span>${esc(msg)}</span>`;
+  d.innerHTML = `<span class="toast-mark">${type === 'success' ? 'OK' : type === 'error' ? 'ERR' : 'INFO'}</span> <span>${esc(msg)}</span>`;
   document.body.append(d);
   _toastTimer = setTimeout(() => d.remove(), 3500);
 }
@@ -219,9 +219,9 @@ function updateXPBanner() {
         <span class="rank-badge" style="border-color:${rank.color};color:${rank.color};background:${rank.color}1a">
           ${rank.tag} · ${rank.title}
         </span>
-        <span class="stat-chip fire">🔥 ${me.streak || 0}d streak</span>
-        <span class="stat-chip focus">⏱️ ${me.focusMinutes || 0}m foco</span>
-        <span class="stat-chip xp">⚡ ${(me.xp || 0).toLocaleString('pt-BR')} XP</span>
+        <span class="stat-chip fire">STREAK ${me.streak || 0}d</span>
+        <span class="stat-chip focus">FOCO ${me.focusMinutes || 0}m</span>
+        <span class="stat-chip xp">XP ${(me.xp || 0).toLocaleString('pt-BR')}</span>
       </div>
       ${rank.next ? `<span style="font-size:0.78rem;color:var(--mut);font-family:var(--mono)">${rank.toNext} XP para ${rank.next.title}</span>` : '<span style="font-size:0.78rem;color:var(--gold);font-weight:700">⭐ NÍVEL MÁXIMO</span>'}
     </div>
@@ -334,7 +334,7 @@ function renderCard(t, compact = false) {
     `<span class="tag p-${t.p}">${PRI_LABEL[t.p]}</span>`,
     t.due ? `<span class="tag ${isLate ? 'due-late' : isToday ? 'due-today' : ''}">${isLate ? '⚠ Atrasada' : isToday ? '📅 Hoje' : '📅 ' + fmtDate(t.due)}</span>` : '',
     t.status !== 'todo' && !t.d ? `<span class="tag status-${t.status}">${STATUS_LABEL[t.status] || t.status}</span>` : '',
-    t.d ? `<span class="tag status-done">✔ Concluída</span>` : '',
+    t.d ? `<span class="tag status-done">Concluída</span>` : '',
   ].filter(Boolean).join('');
 
   const linksHtml = (t.links || []).length ? `
@@ -380,7 +380,7 @@ function renderCard(t, compact = false) {
         <div class="task-actions">
           <button type="button" class="mini ${t.pinned ? 'purple' : ''}" data-pin="${t.id}" title="${t.pinned ? 'Desafixar' : 'Fixar'}">${t.pinned ? '📌' : '📍'}</button>
           <button type="button" class="mini" data-edit-open="${t.id}">✏</button>
-          <button type="button" class="mini danger" data-del="${t.id}">🗑</button>
+          <button type="button" class="mini danger" data-del="${t.id}" title="Excluir">Excluir</button>
         </div>
       </div>
     </div>`;
@@ -408,7 +408,7 @@ function renderKanban(tasks) {
   const cols = [
     { key: 'todo',   label: 'A Fazer',    badge: '', next: 'doing',  nextLabel: 'Em Foco →' },
     { key: 'doing',  label: 'Em Foco',    badge: '', next: 'review', nextLabel: 'Revisão →' },
-    { key: 'review', label: 'Revisão',    badge: '', next: 'done',   nextLabel: '✔ Concluir' },
+    { key: 'review', label: 'Revisão',    badge: '', next: 'done',   nextLabel: 'Concluir' },
     { key: 'done',   label: 'Concluídas', badge: '', prev: 'doing',  prevLabel: '← Reabrir' },
   ];
 
@@ -641,7 +641,7 @@ function openQuickCapture() {
   overlay.className = 'quick-capture';
   overlay.innerHTML = `
     <div class="quick-capture-box">
-      <input class="qc-input" placeholder="⚡ Nova tarefa… (Enter para criar, Esc para fechar)" maxlength="200" autocomplete="off">
+      <input class="qc-input" placeholder="Nova tarefa… (Enter para criar, Esc para fechar)" maxlength="200" autocomplete="off">
       <div class="qc-hint">
         <span><kbd>Enter</kbd> criar</span>
         <span><kbd>Esc</kbd> fechar</span>
@@ -773,10 +773,10 @@ function openStandup(tasks) {
   const done     = tasks.filter(t => t.d);
   const doing    = tasks.filter(t => !t.d && t.status === 'doing');
   const open     = tasks.filter(t => !t.d && t.status !== 'doing');
-  let md = `### ⚡ NEXA Daily Standup · ${nowStr}\n\n`;
+  let md = `### NEXA Daily Standup · ${nowStr}\n\n`;
   md += `**✅ Concluído:**\n${done.length ? done.map(t => `- [x] ${t.x}${t.c ? ` _(${t.c})_` : ''}`).join('\n') : '- _Nada ainda_'}\n\n`;
-  md += `**⚡ Em andamento:**\n${doing.length ? doing.map(t => `- [ ] **${t.x}** [${PRI_LABEL[t.p]}]`).join('\n') : '- _Sem tarefas em foco_'}\n\n`;
-  md += `**📋 Backlog:**\n${open.length ? open.slice(0, 8).map(t => `- [ ] ${t.x}${t.due ? ` _(${t.due})_` : ''}`).join('\n') : '- _Backlog zerado! 🎉_'}\n`;
+  md += `**Em andamento:**\n${doing.length ? doing.map(t => `- [ ] **${t.x}** [${PRI_LABEL[t.p]}]`).join('\n') : '- _Sem tarefas em foco_'}\n\n`;
+  md += `**Backlog:**\n${open.length ? open.slice(0, 8).map(t => `- [ ] ${t.x}${t.due ? ` _(${t.due})_` : ''}`).join('\n') : '- _Backlog zerado_'}\n`;
   if (open.length > 8) md += `- _...e mais ${open.length - 8} tarefas_\n`;
 
   const d = document.createElement('dialog');
@@ -880,7 +880,7 @@ function gate() {
           <input id="le" type="email" autocomplete="email" required placeholder="seu@email.com">
           <label for="lp">Senha${loginMode === 'req' ? ' (12+ chars, letras e números)' : ''}</label>
           <div class="pw-wrap">
-            <input id="lp" type="password" autocomplete="${loginMode === 'req' ? 'new-password' : 'current-password'}" required placeholder="••••••••••••">
+            <input id="lp" type="password" autocomplete="new-password" data-lpignore="true" data-1p-ignore="true" required placeholder="Digite sua senha">
             <button type="button" class="pw-toggle" id="pwt">👁</button>
           </div>
           <p class="msg" id="lmsg" role="alert"></p>
@@ -920,8 +920,8 @@ function gate() {
 async function shell() {
   const isAdmin = me.role === 'admin';
   const navItems = [
-    { id: 'main',  label: '⚡ Painel', icon: '⚡' },
-    ...(isAdmin ? [{ id: 'admin', label: '🛡 Admin', icon: '🛡', badge: pendingCount }] : []),
+    { id: 'main',  label: 'Painel', icon: 'N' },
+    ...(isAdmin ? [{ id: 'admin', label: 'Admin', icon: 'S', badge: pendingCount }] : []),
   ];
   const navHtml = (cls) => navItems.map(n => `
     <button class="${cls}" data-tab="${n.id}" ${currentTab === n.id ? 'aria-current="page"' : ''}>
@@ -936,20 +936,20 @@ async function shell() {
         ${navHtml('side-btn')}
         <div class="side-sep"></div>
         <div class="side-section-label">Ferramentas</div>
-        <button class="side-btn" id="sideSound">${soundEnabled ? '🔊 Som ativo' : '🔇 Mudo'}</button>
-        <button class="side-btn" id="sideTheme">🎨 Tema</button>
-        <button class="side-btn" id="sideExport">📥 Exportar</button>
-        <button class="side-btn" id="sideImport">📤 Importar</button>
-        <button class="side-btn" id="sideKeys">⌨ Atalhos</button>
+        <button class="side-btn" id="sideSound">${soundEnabled ? 'Som ativo' : 'Som mudo'}</button>
+        <button class="side-btn" id="sideTheme">Tema</button>
+        <button class="side-btn" id="sideExport">Exportar</button>
+        <button class="side-btn" id="sideImport">Importar</button>
+        <button class="side-btn" id="sideKeys">Atalhos</button>
         <div class="side-sep"></div>
         <div style="padding:0.5rem 0.9rem;font-size:0.82rem;color:var(--mut)">
           👤 <strong style="color:var(--ink)">${esc(me.name.split(' ')[0])}</strong><br>
           <span style="font-size:0.75rem">${esc(me.email)}</span>
         </div>
-        <button class="side-btn" id="sideOut" style="color:#ff7a8c">⏻ Sair</button>
+        <button class="side-btn" id="sideOut" style="color:#ff7a8c">Sair</button>
       </aside>
       <main id="main"></main>
-      <nav class="nav">${navHtml('nav-btn')}<button class="nav-btn" id="navOut">⏻</button></nav>
+      <nav class="nav">${navHtml('nav-btn')}<button class="nav-btn" id="navOut">Sair</button></nav>
     </div>
   `;
 
@@ -965,7 +965,7 @@ async function shell() {
   $('#sideSound').onclick = () => {
     soundEnabled = !soundEnabled;
     localStorage.setItem('nexa_sound', soundEnabled ? '1' : '0');
-    $('#sideSound').textContent = soundEnabled ? '🔊 Som ativo' : '🔇 Mudo';
+    $('#sideSound').textContent = soundEnabled ? 'Som ativo' : 'Som mudo';
     if (soundEnabled) play('complete');
   };
   $('#sideTheme').onclick = () => {
@@ -1005,16 +1005,16 @@ async function setupDashboard() {
         <button type="button" class="view-btn ${currentView==='kanban'?'active':''}" id="vKanban">☷ Kanban</button>
       </div>
       <div class="quick-tools">
-        <button class="btn s" id="btnFocus">⏱ Foco [F]</button>
-        <button class="btn s" id="btnStandup">📋 Standup [S]</button>
-        <button class="btn s" id="btnKeys">⌨ [?]</button>
+        <button class="btn s" id="btnFocus">Foco [F]</button>
+        <button class="btn s" id="btnStandup">Standup [S]</button>
+        <button class="btn s" id="btnKeys">Atalhos [?]</button>
       </div>
     </div>
 
     <div class="hero-panel">
       <div>
         <p class="eyebrow">Terminal de Produtividade</p>
-        <h1>${greeting}, ${esc(me.name.split(' ')[0])} 👾</h1>
+        <h1>${greeting}, ${esc(me.name.split(' ')[0])}</h1>
       </div>
       <div class="toolbar-card">
         <div class="search-wrap">
@@ -1058,7 +1058,7 @@ async function setupDashboard() {
       <span class="summary" id="taskSummary"></span>
       <div style="display:flex;gap:0.5rem">
         <button type="button" class="btn s ghost" id="sortBtn">↕ Smart</button>
-        <button type="button" class="btn s ghost" id="clearDone">🗑 Limpar concluídas</button>
+        <button type="button" class="btn s ghost" id="clearDone">Limpar concluídas</button>
       </div>
     </div>
 
@@ -1216,8 +1216,8 @@ async function adminView() {
             <p style="margin:0.2rem 0;font-size:0.85rem;color:var(--mut)">${esc(u.email)} · ${fmtDt(u.created)}</p>
           </div>
           <div class="acts">
-            <button class="btn p s" data-admin-action="approve" data-uid="${u.id}" data-uname="${esc(u.name)}">✔ Liberar</button>
-            <button class="btn d s" data-admin-action="deny"    data-uid="${u.id}" data-uname="${esc(u.name)}">✕ Negar</button>
+            <button class="btn p s" data-admin-action="approve" data-uid="${u.id}" data-uname="${esc(u.name)}">Liberar</button>
+            <button class="btn d s" data-admin-action="deny"    data-uid="${u.id}" data-uname="${esc(u.name)}">Negar</button>
           </div>
         </div>
       </div>`).join('') : `<div class="empty-state" style="margin-bottom:1.2rem"><p>Sem solicitações pendentes</p></div>`}
@@ -1239,8 +1239,8 @@ async function adminView() {
               <td style="font-size:0.82rem">${u.last ? fmtDt(u.last) : '—'}</td>
               <td>${isMe ? '<span style="color:var(--mut);font-size:0.8rem">Você</span>' : `
                 <div class="acts">
-                  <button class="btn s ${u.status==='blocked'?'p':'d'}" data-admin-action="${u.status==='blocked'?'unblock':'block'}" data-uid="${u.id}" data-uname="${esc(u.name)}">${u.status==='blocked'?'🔓':'🔒'}</button>
-                  <button class="btn s ghost" data-admin-action="kill" data-uid="${u.id}" data-uname="${esc(u.name)}" title="Encerrar sessões">⚡</button>
+                  <button class="btn s ${u.status==='blocked'?'p':'d'}" data-admin-action="${u.status==='blocked'?'unblock':'block'}" data-uid="${u.id}" data-uname="${esc(u.name)}">${u.status==='blocked'?'Desbloquear':'Bloquear'}</button>
+                  <button class="btn s ghost" data-admin-action="kill" data-uid="${u.id}" data-uname="${esc(u.name)}" title="Encerrar sessões">Revogar</button>
                   <button class="btn s ghost" data-admin-action="${u.role==='admin'?'demote':'promote'}" data-uid="${u.id}" data-uname="${esc(u.name)}" title="${u.role==='admin'?'Remover admin':'Promover a admin'}">${u.role==='admin'?'⇩':'⇧'}</button>
                 </div>`}
               </td>
@@ -1309,7 +1309,7 @@ document.addEventListener('keydown', e => {
   else if (key === 'f') { e.preventDefault(); openFocus(cachedTasks); }
   else if (key === 'k') { e.preventDefault(); if (currentView === 'list') { currentView = 'kanban'; $('#vKanban')?.click(); } else { currentView = 'list'; $('#vList')?.click(); } }
   else if (key === 's') { e.preventDefault(); openStandup(cachedTasks); }
-  else if (key === 'm') { e.preventDefault(); soundEnabled = !soundEnabled; localStorage.setItem('nexa_sound', soundEnabled ? '1' : '0'); toast(soundEnabled ? '🔊 Som ativado' : '🔇 Mudo'); if (soundEnabled) play('complete'); }
+  else if (key === 'm') { e.preventDefault(); soundEnabled = !soundEnabled; localStorage.setItem('nexa_sound', soundEnabled ? '1' : '0'); toast(soundEnabled ? 'Som ativado' : 'Som mudo'); if (soundEnabled) play('complete'); }
   else if (key === 't') { e.preventDefault(); const themes = ['dark','light','midnight']; const cur = localStorage.getItem('nexa_theme')||'dark'; const next = themes[(themes.indexOf(cur)+1)%themes.length]; applyTheme(next); toast(`Tema: ${next}`, 'success'); POST('me/preferences', {theme:next}); }
   else if (key === '?') { e.preventDefault(); openShortcuts(); }
 });

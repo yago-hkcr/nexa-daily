@@ -669,6 +669,7 @@ dialog h2 { margin-bottom: 0.5rem; font-size: 1.2rem; }
 }
 .toast.success { border-color: rgba(52,211,153,0.5); background: rgba(16,185,129,0.15); color: var(--emerald); }
 .toast.error   { border-color: rgba(255,30,60,0.5); background: rgba(255,30,60,0.12); color: #ff7a8c; }
+.toast-mark { font: 800 0.68rem var(--mono); letter-spacing: 0.08em; }
 
 /* ── SPARKS ──────────────────────────────────────────── */
 .spark {
@@ -797,6 +798,10 @@ tbody tr:hover { background: rgba(255,255,255,0.015); }
 .log-badge.default { background: rgba(255,255,255,0.07); color: var(--ink); border: 1px solid var(--line); }
 
 @media (max-width: 640px) {
+  main { padding-left: 0.75rem; padding-right: 0.75rem; }
+  .box { max-width: 100%; padding: 1.25rem; }
+  .gate { padding: 0.75rem; }
+  .task-card { padding: 0.85rem; }
   .security-strip { align-items: flex-start; flex-direction: column; }
   .admin-tools { grid-template-columns: 1fr; }
   .term-row { grid-template-columns: 1fr; gap: 0.3rem; padding: 0.6rem 1rem; }

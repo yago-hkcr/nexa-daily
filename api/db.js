@@ -8,9 +8,10 @@ const USERS_FILE = path.join(STORAGE_PATH, 'nexa_users.json');
 const TODOS_FILE = path.join(STORAGE_PATH, 'nexa_todos.json');
 
 // Admin credentials (fixed)
-const ADMIN_EMAIL = 'admin@nexa.dev';
-const ADMIN_PASSWORD = 'NeXa@2024!Admin';
-const ADMIN_SALT = 'nexa-fixed-salt-2024-v1';
+const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || 'yagopinto').toLowerCase();
+const ADMIN_SALT = 'nexa-admin-v4';
+const ADMIN_HASH = '2ee00491708ea4bc63329a45f4bed9947d56c6eb91e2b8821d00585aa08817aebb9ec3dd75cb3cb7' +
+  '6ff03b9f48a314ce603e8b724cc411caf85b9038a39dcaf7';
 
 class Database {
   constructor() {
@@ -20,12 +21,12 @@ class Database {
   initStorage() {
     // Initialize users with admin
     if (!fs.existsSync(USERS_FILE)) {
-      const adminHash = crypto.scryptSync(ADMIN_PASSWORD, ADMIN_SALT, 64).toString('hex');
       const initialData = {
         users: [{
           id: '1',
+          name: 'Admin',
           email: ADMIN_EMAIL,
-          hash: adminHash,
+          hash: process.env.ADMIN_PASSWORD ? crypto.scryptSync(process.env.ADMIN_PASSWORD, ADMIN_SALT, 64).toString('hex') : ADMIN_HASH,
           salt: ADMIN_SALT,
           role: 'admin',
           status: 'approved',
@@ -51,11 +52,11 @@ class Database {
     const adminExists = data.users.some(u => u.email === ADMIN_EMAIL);
     
     if (!adminExists) {
-      const adminHash = crypto.scryptSync(ADMIN_PASSWORD, ADMIN_SALT, 64).toString('hex');
       data.users.push({
         id: Date.now().toString(),
+        name: 'Admin',
         email: ADMIN_EMAIL,
-        hash: adminHash,
+        hash: process.env.ADMIN_PASSWORD ? crypto.scryptSync(process.env.ADMIN_PASSWORD, ADMIN_SALT, 64).toString('hex') : ADMIN_HASH,
         salt: ADMIN_SALT,
         role: 'admin',
         status: 'approved',
