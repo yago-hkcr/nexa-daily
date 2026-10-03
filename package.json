@@ -1,0 +1,16 @@
+{
+  "name": "nexa-daily",
+  "version": "3.0.0",
+  "description": "NEXA Daily v3 — Terminal de produtividade cyberpunk com XP, Kanban drag-and-drop, Pomodoro e zero dependências externas",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": ["checklist", "cyberpunk", "task-manager", "gamification", "pomodoro", "kanban", "productivity"],
+  "author": "Ygor <yagoassis@gmail.com>",
+  "license": "MIT"
+}
