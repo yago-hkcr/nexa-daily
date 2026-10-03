@@ -881,7 +881,7 @@ function gate() {
           <label for="lp">Senha${loginMode === 'req' ? ' (12+ chars, letras e números)' : ''}</label>
           <div class="pw-wrap">
             <input id="lp" type="password" autocomplete="new-password" data-lpignore="true" data-1p-ignore="true" required placeholder="Digite sua senha">
-            <button type="button" class="pw-toggle" id="pwt">👁</button>
+            <button type="button" class="pw-toggle" id="pwt">Mostrar</button>
           </div>
           <p class="msg" id="lmsg" role="alert"></p>
           <button class="btn p w" type="submit">${loginMode === 'req' ? 'Enviar solicitação' : 'Conectar ao sistema'}</button>
@@ -894,7 +894,7 @@ function gate() {
   $('#pwt').onclick = () => {
     const inp = $('#lp'), show = inp.type === 'password';
     inp.type = show ? 'text' : 'password';
-    $('#pwt').textContent = show ? '🙈' : '👁';
+    $('#pwt').textContent = show ? 'Ocultar' : 'Mostrar';
   };
 
   $('#loginForm').onsubmit = async e => {
